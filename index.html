@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    
+    
+    <script>
+        $(document).ready(function(){  
+            
+            var token = localStorage.getItem("accessToken");
+            if(token != null)
+                $(location).prop('href', '/principal.html');
+            
+            $("#btnLogin").click(function(){
+                var username = $("#username").val();
+                var password = $("#password").val();
+                
+                var data = {
+                    "username": username,
+                    "password": password,
+                    "grant_type" : "password",
+                    "client_id" : 2,
+                    "client_secret" : "cFVgZcYQDosPUSsdNexMxqBCKBpYOxq9wuPkgYF8"
+                }
+                jQuery.ajax({  
+                    url: 'http://localhost:8000/oauth/token',  
+                    type: 'POST',
+                    headers: {
+                        "Accept" : "application/json",
+                        "Content-Type" : "application/json",
+                    },
+                    data: JSON.stringify(data),
+                    
+                    success: function(resultado) {  
+                        localStorage.setItem("accessToken", resultado.access_token);
+                        $(location).prop('href', '/principal.html');
+                        
+                    },
+                    
+                    error: function(resultado){
+                        alert("Credenciales invalidas");
+                    } 
+                    
+                });  
+            });
+            
+        });  
+        
+        
+        
+    </script>
+</head>
+<body>
+    <h1>Login</h1>
+    
+    <div id="login">
+        Usuario: <input type="text" name="username" id="username"> <br>
+        Password: <input type="password" name="password" id="password"> <br>
+        <button id="btnLogin">Login</button>
+    </div>
+    
+    
+</body>
+</html>

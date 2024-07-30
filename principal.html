@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
+</head>
+<body>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+            var token = localStorage.getItem("accessToken");
+            if(token == null)
+                $(location).prop('href', '/index.html');
+
+            $.ajax({
+                url: 'http://localhost:8001/api/pizza/',
+                type: 'get',
+                headers: {
+                    "Accept" : "application/json",
+                    "Content-Type" : "application/json",
+                },
+
+                success: function(data) {
+                    $.each(data, function(i, item) {
+                        $("#pizzas").append(data[i].nombre + " - " + data[i].precio +  "<br>");
+                    });
+                },
+                error: function(data){
+                    alert("No se ha podido crear");
+                }
+            });
+
+            $("#cerrarSesion").click(function(){
+                jQuery.ajax({  
+                    url: 'http://localhost:8000/api/v1/logout',  
+                    type: 'GET',
+                    headers: {
+                        "Accept" : "application/json",
+                        "Content-Type" : "application/json",
+                        "Authorization" : "Bearer " + localStorage.getItem("accessToken")
+                    },
+
+                    success: function(resultado) {  
+                        localStorage.removeItem("accessToken");
+                        $(location).prop('href', '/index.html');
+                        
+                    },
+                    
+                    error: function(resultado){
+                        alert("Error");
+                    } 
+                    
+                });  
+            });
+
+            $("#btnCrear").click(function(){
+                var nombre = $("#nombre").val();
+                var precio = $("#precio").val();
+                
+                var data = {
+                    "nombre": nombre,
+                    "precio": precio,
+                    
+                }
+                jQuery.ajax({  
+                    url: 'http://localhost:8001/api/pizza',  
+                    type: 'POST',
+                    headers: {
+                        "Accept" : "application/json",
+                        "Content-Type" : "application/json",
+                        "Authorization" : "Bearer " + localStorage.getItem("accessToken")
+                    },
+                    data: JSON.stringify(data),
+                    
+                    success: function(resultado) {  
+                        alert("Pizza creada");
+                        
+                        
+                    },
+                    
+                    error: function(resultado){
+                        alert("Hubo un error");
+                    } 
+                    
+                });  
+            });
+
+    });
+
+
+   
+    </script>
+    <a href="#" id="cerrarSesion">Cerrar Sesion</a>
+    <h1>Pizzas</h1>
+
+    <div id="pizzas">
+        Nombre: <input type="text" id="nombre"> <br>
+        Precio: <input type="text" id="precio"> <br>
+        <button id="btnCrear">Crear</button> <br><br>
+    </div> 
+
+    <div id="pizzas"></div>
+
+</body>
+
+
+</html>
